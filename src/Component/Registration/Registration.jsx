@@ -14,7 +14,8 @@ const Registration = () => {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
-    console.log(email, password);
+    const acceptTerms = e.target.terms.checked;
+    console.log(email, password, acceptTerms);
     setDisplayDetails([]);
     setError("");
     setSuccess("");
@@ -25,13 +26,16 @@ const Registration = () => {
     } else if (!/[A-Z]/.test(password)) {
       setError("Must one Uppercase letter");
       return;
+    } else if (!acceptTerms) {
+      setError("Please accept our terms and conditions");
+      return;
     }
 
     createUserWithEmailAndPassword(auth, email, password)
       .then((res) => {
         console.log(res.user);
         setDisplayDetails(res.user);
-        setSuccess("Login Successful!");
+        setSuccess("User created Successfully!");
       })
       .catch((errorFirebase) => {
         console.log(errorFirebase.message);
@@ -40,46 +44,53 @@ const Registration = () => {
   };
 
   return (
-    <div>
-      <div className="bg-gray-200 my-8 max-w-2xl mx-auto text-center py-16 rounded-sm">
-        <form onSubmit={handleRegButton}>
-          <input
-            className="w-2/3 py-2 px-3 rounded-md"
-            type="email"
-            name="email"
-            placeholder="Email"
-            id="1"
-            required
-          />
-          <br></br>
-          <br></br>
-          <div className="relative">
+    <div className="max-w-xl mx-auto">
+      <div className="bg-gray-200 my-8 text-center pb-12 pt-[55px] rounded-sm">
+        <div className="mx-12">
+          <form onSubmit={handleRegButton}>
             <input
-              className="w-2/3 py-2 px-3 rounded-md"
-              type={passwordClass ? "text" : "password"}
-              name="password"
-              placeholder="Password"
-              id="2"
+              className="w-full py-3 px-3 rounded-md outline-none"
+              type="email"
+              name="email"
+              placeholder="Email"
+              id="1"
               required
             />
-            <span
-              onClick={() => setPasswordClass(!passwordClass)}
-              className="absolute m-3"
-            >
-              {passwordClass ? <FaRegEye /> : <FaRegEyeSlash />}
-            </span>
-          </div>
-          <br></br>
-          <button className="btn w-2/3 bg-green-400 text-white">
-            SignUp
-          </button>
-        </form>
+            <br></br>
+            <br></br>
+            <div className="relative">
+              <input
+                className="w-full py-3 px-3 rounded-md outline-none"
+                type={passwordClass ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                id="2"
+                required
+              />
+              <span
+                onClick={() => setPasswordClass(!passwordClass)}
+                className="absolute top-4 right-3"
+              >
+                {passwordClass ? <FaRegEye /> : <FaRegEyeSlash />}
+              </span>
+            </div>
+            <div className="my-3 text-left ml-1">
+              <input type="checkbox" name="terms" id="" />
+              <label className="ml-1" htmlFor="terms">
+                Accept our <a href="/">Terms & conditions!</a>
+              </label>
+            </div>
+            <button className="btn w-full bg-green-400 text-white">
+              SignUp
+            </button>
+          </form>
+        </div>
       </div>
-      <div className="text-center">
+      <div>
         {displayDetails && <p>{displayDetails.email}</p>}{" "}
         <p className="text-green-500">{success}</p>
+        {error && <p className="text-center text-red-500">{error}</p>}
       </div>
-      {error && <p className="text-center text-red-500">{error}</p>}
     </div>
   );
 };
