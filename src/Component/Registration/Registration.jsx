@@ -3,12 +3,13 @@ import auth from "../../Firebase/firebase.config";
 import { useState } from "react";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Registration = () => {
-  const [success, setSuccess] = useState("");
   const [displayDetails, setDisplayDetails] = useState([]);
-  const [error, setError] = useState("");
   const [passwordClass, setPasswordClass] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   const handleRegButton = (e) => {
     e.preventDefault();
@@ -45,7 +46,7 @@ const Registration = () => {
 
   return (
     <div className="max-w-xl mx-auto">
-      <div className="bg-gray-200 my-8 text-center pb-12 pt-[55px] rounded-sm">
+      <div className="bg-gray-200 my-8 text-center pb-9 pt-[55px] rounded-sm">
         <div className="mx-12">
           <form onSubmit={handleRegButton}>
             <input
@@ -85,6 +86,12 @@ const Registration = () => {
             </button>
           </form>
         </div>
+        <p className="mt-2">
+          Already have an account?{" "}
+          <span className="text-green-600">
+            <Link to={"/login"}>Sign In</Link>
+          </span>
+        </p>
       </div>
       <div>
         {displayDetails && <p>{displayDetails.email}</p>}{" "}

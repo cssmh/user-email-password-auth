@@ -1,9 +1,11 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import auth from "../../Firebase/firebase.config";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 const Login = () => {
   const [loggedUser, setLoggedUser] = useState(null);
   const [error, setError] = useState("");
+  const emailRef = useRef(null)
 
   const handleFormButton = (e) => {
     e.preventDefault();
@@ -11,8 +13,8 @@ const Login = () => {
     const password = e.target.password.value;
     console.log(email, password);
 
-    setLoggedUser(null)
-    setError("")
+    setLoggedUser(null);
+    setError("");
 
     signInWithEmailAndPassword(auth, email, password)
       .then((result) => {
@@ -24,6 +26,27 @@ const Login = () => {
         setError(error.message);
       });
   };
+
+  const handleForgotPassword = () => {
+    const getEmail = emailRef.current.value;
+    if(!getEmail){
+      alert("insert your email first")
+      return;
+    }
+    else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(getEmail)){
+      alert("insert a valid email")
+      return;
+    }
+
+    // send validation email, forgot email
+    sendPasswordResetEmail(auth, getEmail)
+    .then(()=> {
+      console.log("Password reset email sent!");
+    })
+    .catch(err => {
+      console.log(err.message);
+    })
+  }
 
   return (
     <div className="hero min-h-[80vh] bg-base-200">
@@ -43,6 +66,7 @@ const Login = () => {
                 placeholder="Email"
                 className="input input-bordered"
                 name="email"
+                ref={emailRef}
                 required
               />
             </div>
@@ -58,7 +82,11 @@ const Login = () => {
                 required
               />
               <label className="label">
-                <a href="#" className="label-text-alt link link-hover">
+                <a
+                  onClick={handleForgotPassword}
+                  href="#"
+                  className="label-text-alt link link-hover"
+                >
                   Forgot password?
                 </a>
               </label>
@@ -67,6 +95,12 @@ const Login = () => {
               <button className="btn btn-primary">Login</button>
             </div>
           </form>
+          <p className="text-center mt-1">
+            New Here?{" "}
+            <span className="text-green-600">
+              <Link to={"/reg"}>Sign up</Link>
+            </span>
+          </p>
           <div className="text-center my-3">
             {loggedUser && (
               <div>
@@ -74,9 +108,7 @@ const Login = () => {
                 <p className="text-green-500">Login Successful</p>
               </div>
             )}
-            {
-              error && <p className="text-red-500">{error}</p>
-            }
+            {error && <p className="text-red-500">{error}</p>}
           </div>
         </div>
       </div>
