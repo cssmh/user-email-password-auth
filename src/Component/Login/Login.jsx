@@ -1,11 +1,15 @@
-import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import auth from "../../Firebase/firebase.config";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 const Login = () => {
   const [loggedUser, setLoggedUser] = useState(null);
+  const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const emailRef = useRef(null)
+  const emailRef = useRef(null);
 
   const handleFormButton = (e) => {
     e.preventDefault();
@@ -15,11 +19,18 @@ const Login = () => {
 
     setLoggedUser(null);
     setError("");
+    setSuccess("");
 
     signInWithEmailAndPassword(auth, email, password)
       .then((result) => {
         console.log(result.user);
         setLoggedUser(result.user);
+        if (result.user.emailVerified) {
+          setSuccess("Login Successful");
+        } else {
+          alert("Please check your email and verify your account first");
+          return;
+        }
       })
       .catch((error) => {
         console.log(error.message);
@@ -29,24 +40,23 @@ const Login = () => {
 
   const handleForgotPassword = () => {
     const getEmail = emailRef.current.value;
-    if(!getEmail){
-      alert("insert your email first")
+    if (!getEmail) {
+      alert("insert your email first");
       return;
-    }
-    else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(getEmail)){
-      alert("insert a valid email")
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(getEmail)) {
+      alert("insert a valid email");
       return;
     }
 
     // send validation email, forgot email
     sendPasswordResetEmail(auth, getEmail)
-    .then(()=> {
-      console.log("Password reset email sent!");
-    })
-    .catch(err => {
-      console.log(err.message);
-    })
-  }
+      .then(() => {
+        console.log("Password reset email sent!");
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
 
   return (
     <div className="hero min-h-[80vh] bg-base-200">
@@ -102,10 +112,10 @@ const Login = () => {
             </span>
           </p>
           <div className="text-center my-3">
-            {loggedUser && (
+            {success.length > 0 && (
               <div>
                 <p>{loggedUser.email}</p>
-                <p className="text-green-500">Login Successful</p>
+                <p className="text-green-500">{success}</p>
               </div>
             )}
             {error && <p className="text-red-500">{error}</p>}
