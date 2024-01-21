@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 import auth from "../../Firebase/firebase.config";
 import { useState } from "react";
 import { FaRegEyeSlash } from "react-icons/fa";
@@ -13,10 +13,11 @@ const Registration = () => {
 
   const handleRegButton = (e) => {
     e.preventDefault();
+    const name = e.target.name.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
     const acceptTerms = e.target.terms.checked;
-    console.log(email, password, acceptTerms);
+    console.log(name, email, password, acceptTerms);
     setDisplayDetails([]);
     setError("");
     setSuccess("");
@@ -38,6 +39,16 @@ const Registration = () => {
         setDisplayDetails(res.user);
         setSuccess("User created Successfully!");
 
+        updateProfile(res.user, {
+          displayName: name
+        })
+        .then(()=> {
+          console.log("Profile Updated");
+        })
+        .catch(err => {
+          console.log(err.message);
+        })
+
         sendEmailVerification(res.user)
         .then(console.log("Email verification sent!"))
         .catch(err => {
@@ -56,6 +67,16 @@ const Registration = () => {
       <div className="bg-gray-200 my-8 text-center pb-9 pt-[55px] rounded-sm">
         <div className="mx-12">
           <form onSubmit={handleRegButton}>
+            <input
+              className="w-full py-3 px-3 rounded-md outline-none"
+              type="text"
+              name="name"
+              placeholder="Your Name"
+              id="3"
+              required
+            />
+            <br></br>
+            <br></br>
             <input
               className="w-full py-3 px-3 rounded-md outline-none"
               type="email"
