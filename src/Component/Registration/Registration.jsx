@@ -37,7 +37,7 @@ const Registration = () => {
       .then((res) => {
         console.log(res.user);
         setDisplayDetails(res.user);
-        setSuccess("User created Successfully!");
+        setSuccess("User Created Successfully!");
 
         updateProfile(res.user, {
           displayName: name
